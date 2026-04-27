@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/bring
+bring.so
+bring.dylib
+bring.dll
+libbring.a
+bring.a
+bring.lib
+bring-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
