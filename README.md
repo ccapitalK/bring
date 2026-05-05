@@ -20,6 +20,7 @@ be tracked using named file system stores, or an s3 compatible store.
 - [ ] Sync
 - [ ] Init
 - [ ] Add
+- [ ] Store management
 
 ## UI
 
@@ -29,4 +30,5 @@ $ bring update-gitignore
 $ bring checkout HEAD~ foo/bar/data.bin
 $ bring ensure-sync # return 0 iff all checksums in current worktree are present on bring remote 
 $ bring sync
+$ bring init-local-store
 ```
