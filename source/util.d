@@ -6,6 +6,9 @@ import std.format;
 import std.process;
 import std.range;
 
+enum BRHASH_FILE_EXT = "brhash";
+enum BRHASH_FILE_EXT_WITH_DOT = "." ~ BRHASH_FILE_EXT;
+
 string executeOrDie(string[] cmd) {
     auto res = execute(cmd);
     enforce(res.status == 0, cmd.format!"Failed to execute %s");

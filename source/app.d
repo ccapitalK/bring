@@ -17,9 +17,9 @@ import bring.worktree;
 
 void add(Context ctx, string[] args) {
     foreach (path; args[1 .. $]) {
-        enforce(!path.endsWith(".brhash"), "Can't stage bring hash file");
+        enforce(!path.endsWith(BRHASH_FILE_EXT_WITH_DOT), "Can't stage bring hash file");
         auto hashData = hashFileContents(path).serialize;
-        auto hashPath = path ~ ".brhash";
+        auto hashPath = path ~ BRHASH_FILE_EXT_WITH_DOT;
         std.file.write(hashPath, hashData);
     }
 }

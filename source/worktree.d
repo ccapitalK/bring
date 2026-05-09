@@ -26,14 +26,14 @@ BringHash[string] allHashPaths(string gitRoot) {
                     continue;
                 }
 
-                if (!entry.name.endsWith(".brhash")) {
+                if (!entry.name.endsWith(BRHASH_FILE_EXT_WITH_DOT)) {
                     continue;
                 }
-                auto trackedFilePath = entry.name.removeSuffix(".brhash");
+                auto trackedFilePath = entry.name.removeSuffix(BRHASH_FILE_EXT_WITH_DOT);
                 auto hash = readBringHash(entry.name);
 
                 // FIXME: Graceful error handling for this
-                enforce(!trackedFilePath.endsWith(".brhash"), "Can't nest brhash extensions");
+                enforce(!trackedFilePath.endsWith(BRHASH_FILE_EXT_WITH_DOT), "Can't nest brhash extensions");
                 m[trackedFilePath] = hash;
             }
             // FIXME: Catch specific exceptions, such as permission denied
@@ -48,7 +48,10 @@ BringHash[string] allHashPaths(string gitRoot) {
 
 // FIXME: Use BringHash as key, instead of string
 bool[string] checkResidence(Context ctx, BringHash[string] trackedFileHashes) {
-    auto allHashes = trackedFileHashes.byValue.map!"a.hashHex".toSet!string.keys;
+    auto allHashes = trackedFileHashes.byValue
+        .map!"a.hashHex"
+        .toSet!string
+        .keys;
     bool[string] isHashResident;
     foreach (chunk; allHashes.chunks(16)) {
         foreach (i, res; ctx.store.has(chunk)) {
