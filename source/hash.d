@@ -1,7 +1,11 @@
 module bring.hash;
 
+import std.array;
 import std.digest.sha;
+import std.exception;
 static import std.file;
+static import std.stdio;
+import std.string;
 
 import bring.context;
 import bring.util;
@@ -13,6 +17,19 @@ enum HashAlgorithm {
 struct BringHash {
     HashAlgorithm algorithm;
     string hashHex;
+}
+
+BringHash hashFileContents(string path) {
+    auto digest = makeDigest!SHA1();
+    auto file = std.stdio.File(path);
+    foreach (chunk; file.byChunk(8192)) {
+        digest.put(chunk);
+    }
+    const hash = digest.finish();
+    return BringHash(
+        algorithm: HashAlgorithm.sha1,
+        hashHex: hash.toHexString().idup,
+    );
 }
 
 BringHash hashFromData(ubyte[] data) {
@@ -27,13 +44,20 @@ BringHash hashFromData(ubyte[] data) {
 }
 
 string serialize(BringHash hash) {
-    return hash.hashHex;
+    enforce(hash.algorithm == HashAlgorithm.sha1);
+    return "BRING:SHA1:" ~ hash.hashHex;
 }
 
 BringHash readBringHash(string path) {
+    auto data = std.file.readText(path);
+    enforce(data.startsWith("BRING"), "Invalid magic for hashfile");
+    auto parts = data.split(':');
+    enforce(parts.length == 3, "Invalid hashfile");
+    enforce(parts[0] == "BRING", "Invalid magic");
+    enforce(parts[1] == "SHA1", "Unknown hash algorithm");
     return BringHash(
         algorithm: HashAlgorithm.sha1,
-        hashHex: std.file.readText(path),
+        hashHex: parts[2].strip,
     );
 }
 
