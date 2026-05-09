@@ -9,6 +9,7 @@ import std.process;
 import std.stdio;
 
 import bring.context;
+import bring.commands.checkout;
 import bring.commands.status;
 import bring.commands.sync;
 import bring.hash;
@@ -26,10 +27,6 @@ void add(Context ctx, string[] args) {
 
 void ensureSync(Context ctx, string[] args) {
     writeln("TODO ENSURE-SYNC");
-}
-
-void checkout(Context ctx, string[] args) {
-    writeln("TODO CHECKOUT");
 }
 
 void updateGitIgnore(Context ctx, string[] args) {
