@@ -17,13 +17,13 @@ void checkout(Context ctx, string[] args) {
         if (path.endsWith(BRHASH_FILE_EXT_WITH_DOT)) {
             path = path.removeSuffix(BRHASH_FILE_EXT_WITH_DOT);
         }
-        if (!std.file.exists(path)) {
+        enforce(!path.endsWith(BRHASH_FILE_EXT_WITH_DOT), "Can't nest brhash extensions");
+        auto hashPath = path ~ BRHASH_FILE_EXT_WITH_DOT;
+        if (!std.file.exists(hashPath)) {
             writeln("Warn: Tried to checkout non-existent file");
             continue;
         }
-        enforce(!path.endsWith(BRHASH_FILE_EXT_WITH_DOT), "Can't nest brhash extensions");
         enforce(ctx.store.has([path]), "Tried to fetch non-existent hash");
-        auto hashPath = path ~ BRHASH_FILE_EXT_WITH_DOT;
         auto hashData = hashPath.readBringHash();
         auto data = ctx.store.get(hashData.hashHex);
         std.file.write(path, data);
