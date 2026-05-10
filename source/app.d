@@ -22,7 +22,7 @@ void add(Context ctx, string[] args) {
     foreach (path; args[1 .. $]) {
         enforce(!path.endsWith(BRHASH_FILE_EXT_WITH_DOT), "Can't stage bring hash file");
         if (!std.file.exists(path)) {
-            writeln("Couldn't stage file ", path);
+            writeln("Couldn't stage file ", ctx.relPathFor(path));
             continue;
         }
         auto hashData = hashFileContents(path).serialize;

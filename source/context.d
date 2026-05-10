@@ -70,6 +70,8 @@ class FSStore : Store {
 class Context {
     string gitRoot;
     Store store;
+
+    string relPathFor(string path) const => relativePath(path, gitRoot);
 }
 
 string getGitRoot() {

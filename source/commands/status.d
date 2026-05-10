@@ -22,9 +22,10 @@ void status(Context ctx, string[] args) {
     writefln!"%d files tracked.\n"(paths.length);
     bool hasChanges;
     foreach (path; paths.byKey) {
+        auto relpath = ctx.relPathFor(path);
         // FIXME: Rethink this, so that we don't keep stat-ing the same files
         if (!std.file.exists(path)) {
-            writeln("Deleted: ", path);
+            writeln("Deleted: ", relpath);
             hasChanges = true;
             continue;
         }
@@ -32,12 +33,12 @@ void status(Context ctx, string[] args) {
         enforce(hashOnDisk.algorithm == HashAlgorithm.sha1);
         auto hashHexAsTracked = paths[path].hashHex;
         if (hashOnDisk.hashHex != hashHexAsTracked) {
-            writeln("Modified: ", path);
+            writeln("Modified: ", relpath);
             hasChanges = true;
             continue;
         }
         if (!isHashResident[hashHexAsTracked]) {
-            writeln("Not pushed: ", path);
+            writeln("Not pushed: ", relpath);
             hasChanges = true;
         }
     }
