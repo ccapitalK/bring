@@ -19,6 +19,7 @@ bring-test-*
 # Test data
 *.png
 *.jpg
+*.data
 
 # Perf info
 perf.data

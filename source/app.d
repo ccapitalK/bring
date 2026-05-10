@@ -66,7 +66,7 @@ immutable COMMANDS = [
     "checkout": Command("checkout", "Checkout a specific version of a tracked file, by git commit", &checkout),
     "update-gitignore": Command("checkout", "Ensure all tracked files are in gitignores", &updateGitIgnore),
     "init-local-store": Command("init-local-store", "Add a local named store", &initLocalStore),
-    "status": Command("status", "Print current bring status", &status),
+    "status": Command("status", "Print current bring status (default)", &status),
 ];
 
 void main(string[] args) {
