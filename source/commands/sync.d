@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
 module bring.commands.sync;
 
 import std.algorithm;
