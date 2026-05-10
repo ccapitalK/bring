@@ -23,8 +23,8 @@ void checkout(Context ctx, string[] args) {
             writeln("Warn: Tried to checkout non-existent file");
             continue;
         }
-        enforce(ctx.store.has([path]), "Tried to fetch non-existent hash");
         auto hashData = hashPath.readBringHash();
+        enforce(ctx.store.has([hashData.hashHex])[0], "Tried to fetch non-existent hash");
         auto data = ctx.store.get(hashData.hashHex);
         std.file.write(path, data);
     }
