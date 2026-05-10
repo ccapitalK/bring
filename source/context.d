@@ -7,6 +7,7 @@ import std.array;
 import std.digest;
 static import std.file;
 import std.path;
+import std.range;
 import std.stdio;
 import std.string : toLower;
 
@@ -15,7 +16,18 @@ import bring.util;
 interface Store {
     bool[] has(string[] hashes);
     ubyte[] get(string hash);
-    void put(string hash, ubyte[] data);
+    void putStream(string hash, ubyte[] delegate() nextChunk);
+    void put(Range)(string hash, Range chunks) if (isInputRange!(Range, ubyte[])) {
+        scope ubyte[] delegate() func = {
+            if (chunks.empty) {
+                return (ubyte[]).init;
+            }
+            auto nextChunk = chunks.front;
+            chunks.popFront();
+            return nextChunk;
+        };
+        putStream(hash, func);
+    }
 }
 
 // TODO: Single syscall for this? Without an exception handler perhaps?
@@ -35,17 +47,23 @@ class FSStore : Store {
         return buildPath(rootPath, "blobs", hash.toLower);
     }
 
-    bool[] has(string[] hashes) {
+    override bool[] has(string[] hashes) {
         return hashes.map!(h => isFile(pathForHash(h))).array;
     }
 
-    ubyte[] get(string hash) {
+    override ubyte[] get(string hash) {
         return cast(ubyte[]) std.file.read(pathForHash(hash));
     }
 
-    // XXX Don't require reading in memory
-    void put(string hash, ubyte[] data) {
-        std.file.write(pathForHash(hash), data);
+    void putStream(string hash, ubyte[] delegate() nextChunk) {
+        auto file = File(pathForHash(hash), "wb");
+        while (true) {
+            auto chunk = nextChunk();
+            if (chunk == []) {
+                break;
+            }
+            file.write(chunk);
+        }
     }
 }
 

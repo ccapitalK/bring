@@ -20,14 +20,18 @@ void sync(Context ctx, string[] args) {
     auto paths = ctx.gitRoot.allHashPaths();
     auto isHashResident = ctx.checkResidence(paths);
     foreach (path; paths.byKey) {
-        auto hashOnDisk = path.hashFileContents;
+        auto hashOnDisk = path.getFileDataHashWithCaching;
         enforce(hashOnDisk.algorithm == HashAlgorithm.sha1);
         auto hashHexAsTracked = paths[path].hashHex;
         if (hashOnDisk.hashHex != hashHexAsTracked) {
             writeln("Warning: Skipping modified file ", path);
             continue;
         }
+        if (isHashResident[hashHexAsTracked]) {
+            continue;
+        }
         writeln("Syncing ", path);
-        ctx.store.put(hashHexAsTracked, cast(ubyte[]) std.file.read(path));
+        auto file = File(path, "rb");
+        ctx.store.put(hashHexAsTracked, file.byChunk(512 * 1024));
     }
 }

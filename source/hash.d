@@ -3,6 +3,7 @@
 module bring.hash;
 
 import std.array;
+import std.datetime;
 import std.digest.sha;
 import std.exception;
 static import std.file;
@@ -34,17 +35,6 @@ BringHash hashFileContents(string path) {
     );
 }
 
-BringHash hashFromData(ubyte[] data) {
-    // FIXME: Streaming hash, literally 5 lines
-    auto digest = makeDigest!SHA1();
-    digest.put(data);
-    const hash = digest.finish();
-    return BringHash(
-        algorithm: HashAlgorithm.sha1,
-        hashHex: hash.toHexString().idup,
-    );
-}
-
 string serialize(BringHash hash) {
     enforce(hash.algorithm == HashAlgorithm.sha1);
     return "BRING:SHA1:" ~ hash.hashHex;
@@ -63,3 +53,15 @@ BringHash readBringHash(string path) {
     );
 }
 
+// FIXME: Rewrite this using raw syscalls
+SysTime mTime(string path) {
+    return std.file.timeLastModified(path);
+}
+
+BringHash getFileDataHashWithCaching(string path) {
+    enforce(!path.endsWith(BRHASH_FILE_EXT_WITH_DOT));
+    auto hashFilePath = path ~ BRHASH_FILE_EXT_WITH_DOT;
+    auto fileMTime = path.mTime;
+    auto hashFileMTime = hashFilePath.mTime;
+    return hashFileMTime >= fileMTime ? path.hashFileContents : hashFilePath.readBringHash;
+}

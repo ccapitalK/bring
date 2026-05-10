@@ -13,13 +13,13 @@ be tracked using named file system stores, or an s3 compatible store.
 
 ## Planned Features
 
-- [ ] Status
+- [x] Status
+- [x] Checkout
+- [x] Add
 - [ ] Update gitignore
-- [ ] Checkout
 - [ ] Ensure Sync
 - [ ] Sync
 - [ ] Init
-- [ ] Add
 - [ ] Store management
 
 ## UI
