@@ -85,6 +85,15 @@ Context setupContext() {
     writeln("Root: ", gitRoot);
     auto ctx = new Context();
     ctx.gitRoot = gitRoot;
-    ctx.store = new FSStore("~/.local/share/bringStore".expandTilde);
+    // TODO: Factor this out
+    auto storeDir = "~/.local/share/bringStore".expandTilde;
+    ctx.store = new FSStore(storeDir);
+    if (!std.file.exists(storeDir)) {
+        std.file.mkdir(storeDir);
+    }
+    auto blobsDir = buildPath(storeDir, "blobs");
+    if (!std.file.exists(blobsDir)) {
+        std.file.mkdir(blobsDir);
+    }
     return ctx;
 }

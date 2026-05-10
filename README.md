@@ -9,13 +9,14 @@ I want to get the UX right first before ironing out parts of the implementation,
 data model/data layout will be the final one. Use at your own risk**
 
 
-## Design
+## Intended Design
 
 Each binary file should be ignored in the host git repo, the corresponding ascii hash files should be tracked.
 For a binary file named "${FOO}", the corresponding hash file is "${FOO}.brhash".
 
 In the root of the git repo, a config file (`.bringrc`) specifies the repo's canonical binary store. Binary stores can
-be tracked using named file system stores, or an s3 compatible store.
+be tracked using named file system stores, an s3 compatible store, or over ssh (planned, currently hardcode user wide
+fs store).
 
 ## Planned Features
 
@@ -28,7 +29,7 @@ be tracked using named file system stores, or an s3 compatible store.
 - [ ] Init
 - [ ] Store management
 
-## UI
+## Intended UI
 
 ```
 $ bring status
