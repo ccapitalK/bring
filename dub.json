@@ -1,9 +1,10 @@
 {
-    "description": "A minimal D application.",
-    "license": "proprietary",
+    "description": "Binary file store and synchronization tool for git",
+    "license": "GPL-2.0-only",
     "authors": [
-        "sahan"
+        "Sahan Fernando <sahan.h.fernando@gmail.com>"
     ],
+    "version": "0.1.0",
     "copyright": "Copyright © 2026, sahan",
     "name": "bring"
 }
