@@ -63,5 +63,5 @@ BringHash getFileDataHashWithCaching(string path) {
     auto hashFilePath = path ~ BRHASH_FILE_EXT_WITH_DOT;
     auto fileMTime = path.mTime;
     auto hashFileMTime = hashFilePath.mTime;
-    return hashFileMTime >= fileMTime ? path.hashFileContents : hashFilePath.readBringHash;
+    return hashFileMTime >= fileMTime ? hashFilePath.readBringHash : path.hashFileContents;
 }
