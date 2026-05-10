@@ -29,7 +29,7 @@ void status(Context ctx, string[] args) {
             hasChanges = true;
             continue;
         }
-        auto hashOnDisk = path.hashFileContents;
+        auto hashOnDisk = path.getFileDataHashWithCaching;
         enforce(hashOnDisk.algorithm == HashAlgorithm.sha1);
         auto hashHexAsTracked = paths[path].hashHex;
         if (hashOnDisk.hashHex != hashHexAsTracked) {
