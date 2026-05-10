@@ -16,5 +16,10 @@ bring-test-*
 *.obj
 *.lst
 
+# Test data
 *.png
 *.jpg
+
+# Perf info
+perf.data
+perf.data.old
