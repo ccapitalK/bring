@@ -1,7 +1,7 @@
 # Maintainer: Sahan Fernando <sahan.h.fernando@gmail.com>
 
 pkgname=bring
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 arch=('x86_64')
 pkgdesc="Binary file store and synchronization tool for git"
