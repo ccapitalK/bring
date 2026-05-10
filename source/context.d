@@ -52,6 +52,7 @@ class FSStore : Store {
     }
 
     override ubyte[] get(string hash) {
+        // FIXME: Stream this
         return cast(ubyte[]) std.file.read(pathForHash(hash));
     }
 
@@ -62,7 +63,7 @@ class FSStore : Store {
             if (chunk == []) {
                 break;
             }
-            file.write(chunk);
+            file.rawWrite(chunk);
         }
     }
 }
