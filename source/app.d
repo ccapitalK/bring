@@ -12,8 +12,8 @@ import std.stdio;
 
 import bring.context;
 import bring.commands.checkout;
+import bring.commands.push;
 import bring.commands.status;
-import bring.commands.sync;
 import bring.hash;
 import bring.util;
 import bring.worktree;
@@ -61,15 +61,17 @@ struct Command {
 
 immutable COMMANDS = [
     "add": Command("add", "Track a file using bring", &add),
-    "sync": Command("sync", "Synchronize hashed files in current tree with remote", &sync),
+    "push": Command("push", "Push hashed files in current tree to remote", &push),
     "ensure-sync": Command("ensure-sync", "Ensure all files in tree are present in remote", &ensureSync),
     "checkout": Command("checkout", "Checkout a specific version of a tracked file, by git commit", &checkout),
-    "update-gitignore": Command("checkout", "Ensure all tracked files are in gitignores", &updateGitIgnore),
+    "update-gitignore": Command("update-gitignore", "Ensure all tracked files are in gitignores", &updateGitIgnore),
     "init-local-store": Command("init-local-store", "Add a local named store", &initLocalStore),
     "status": Command("status", "Print current bring status (default)", &status),
 ];
 
-void main(string[] args) {
+static assert(COMMANDS.keys.all!(k => COMMANDS[k].name == k));
+
+void innerMain(string[] args) {
     if (args.length == 1) {
         args ~= "status";
     }
@@ -84,4 +86,19 @@ void main(string[] args) {
         throw new Exception("Unknown command " ~ args[1]);
     }
     cmd.func(setupContext(), subcommand);
+}
+
+int main(string[] args) {
+    debug {
+        innerMain(args);
+        return 0;
+    } else {
+        try {
+            innerMain(args);
+        } catch (Exception e) {
+            writeln("Execution failed: ", e.msg);
+            return 1;
+        }
+    }
+    return 0;
 }

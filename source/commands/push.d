@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 
-module bring.commands.sync;
+module bring.commands.push;
 
 import std.algorithm;
 import std.exception;
@@ -16,7 +16,7 @@ import bring.hash;
 import bring.util;
 import bring.worktree;
 
-void sync(Context ctx, string[] args) {
+void push(Context ctx, string[] args) {
     auto paths = ctx.gitRoot.allHashPaths();
     auto isHashResident = ctx.checkResidence(paths);
     foreach (path; paths.byKey) {

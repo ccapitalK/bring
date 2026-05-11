@@ -23,9 +23,9 @@ fs store).
 - [x] Status
 - [x] Checkout
 - [x] Add
+- [x] Push
 - [ ] Update gitignore
 - [ ] Ensure Sync
-- [ ] Sync
 - [ ] Init
 - [ ] Store management
 
