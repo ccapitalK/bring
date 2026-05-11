@@ -6,6 +6,7 @@ module bring.worktree;
 import std.algorithm;
 import std.exception;
 static import std.file;
+import std.path;
 import std.range;
 import std.stdio;
 
@@ -13,14 +14,20 @@ import bring.context;
 import bring.hash;
 import bring.util;
 
+// FIXME: std.file.dirEntries eagerly call fsstat. This could be worked around for .brhash files,
+// but there is no way to just walk the dirs without also seeing the files.
+
 // Returns mapping from path to hash, for each tracked file in the repo
 BringHash[string] allHashPaths(string gitRoot) {
     BringHash[string] m;
     void visit(string path) {
         try {
             foreach (entry; std.file.dirEntries(path, std.file.SpanMode.shallow)) {
+                // TODO: Parse and handle Gitignore. Warn if gitignoring .brhash but not the corresponding file
                 if (entry.isDir) {
-                    visit(entry.name);
+                    if (entry.name.baseName != ".git") {
+                        visit(entry.name);
+                    }
                     continue;
                 }
 
@@ -39,9 +46,9 @@ BringHash[string] allHashPaths(string gitRoot) {
                 enforce(!trackedFilePath.endsWith(BRHASH_FILE_EXT_WITH_DOT), "Can't nest brhash extensions");
                 m[trackedFilePath] = hash;
             }
-            // FIXME: Catch specific exceptions, such as permission denied
-        } catch (Exception e) {
-            writeln("Exception when trying to visit directory '", path, "': ", e);
+            // FIXME: Catch other exceptions here
+        } catch (std.file.FileException e) {
+            writeln("Exception when trying to visit '", path, "': ", e);
         }
     }
 
