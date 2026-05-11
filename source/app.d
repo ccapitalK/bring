@@ -1,3 +1,4 @@
+// SPDX-FileCopyrightText: 2026 Sahan Fernando <sahan.h.fernando@gmail.com>
 // SPDX-License-Identifier: GPL-2.0-only
 
 module bring.app;
