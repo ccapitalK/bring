@@ -37,4 +37,11 @@ bool existsAndIsFile(string path) {
     return std.file.exists(path) && std.file.isFile(path);
 }
 
+// FIXME: Make this more robust, different paths for different OS, kernel timesource
+void updateTimestampToNow(string path) {
+    import std.datetime;
+    auto now = Clock.currTime;
+    std.file.setTimes(path, now, now);
+}
+
 enum READBUF_SIZE = 512 * 1024;
