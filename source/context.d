@@ -15,8 +15,11 @@ import std.string : toLower;
 import bring.util;
 
 interface Store {
+    /// Batch hash presence query api. Takes a list of hashes, returns a list of isPresent for each query.
     bool[] has(string[] hashes);
-    ubyte[] get(string hash);
+    // Get the binary data for a given hash, as a stream of data chunks
+    void getStream(string hash, void delegate(ubyte[]) onChunk);
+    // Write the binary data for a given hash, provided as a stream of data chunks
     void putStream(string hash, ubyte[]delegate() nextChunk);
 }
 
@@ -41,6 +44,15 @@ void put(Range)(Store store, string hash, Range chunks)
     store.putStream(hash, func);
 }
 
+// FIXME: This is so prone to bugs. Just use a scope interface object
+ubyte[] get(Store store, string hash) {
+    auto builder = appender!(ubyte[])([]);
+    store.getStream(hash, (ubyte[] data) {
+        builder.put(data);
+    });
+    return builder.data;
+}
+
 class FSStore : Store {
     string rootPath;
 
@@ -57,9 +69,12 @@ class FSStore : Store {
         return hashes.map!(h => existsAndIsFile(pathForHash(h))).array;
     }
 
-    override ubyte[] get(string hash) {
-        // FIXME: Stream this
-        return cast(ubyte[]) std.file.read(pathForHash(hash));
+    override void getStream(string hash, void delegate(ubyte[]) onChunk) {
+        auto file = File(pathForHash(hash), "rb");
+        foreach (chunk; file.byChunk(READBUF_SIZE) ) {
+            onChunk(chunk);
+        }
+        onChunk([]);
     }
 
     void putStream(string hash, ubyte[]delegate() nextChunk) {
