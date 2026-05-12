@@ -11,7 +11,6 @@ static import std.file;
 static import std.stdio;
 import std.string;
 
-import bring.context;
 import bring.util;
 
 enum HashAlgorithm {

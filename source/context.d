@@ -4,8 +4,6 @@
 module bring.context;
 
 import std.algorithm;
-import std.array;
-import std.digest;
 static import std.file;
 import std.path;
 import std.range;
