@@ -34,6 +34,6 @@ void push(Context ctx, string[] args) {
         }
         writeln("Syncing ", relpath);
         auto file = File(path, "rb");
-        ctx.store.put(hashHexAsTracked, file.byChunk(512 * 1024));
+        ctx.store.put(hashHexAsTracked, file.byChunk(READBUF_SIZE));
     }
 }

@@ -36,3 +36,5 @@ void[0][T] toSet(T, U)(U val) if (isInputRange!(U)) {
 bool existsAndIsFile(string path) {
     return std.file.exists(path) && std.file.isFile(path);
 }
+
+enum READBUF_SIZE = 512 * 1024;
