@@ -41,11 +41,6 @@ void put(Range)(Store store, string hash, Range chunks)
     store.putStream(hash, func);
 }
 
-// TODO: Single syscall for this? Without an exception handler perhaps?
-private bool isFile(string path) {
-    return std.file.exists(path) && std.file.isFile(path);
-}
-
 class FSStore : Store {
     string rootPath;
 
@@ -59,7 +54,7 @@ class FSStore : Store {
     }
 
     override bool[] has(string[] hashes) {
-        return hashes.map!(h => isFile(pathForHash(h))).array;
+        return hashes.map!(h => existsAndIsFile(pathForHash(h))).array;
     }
 
     override ubyte[] get(string hash) {

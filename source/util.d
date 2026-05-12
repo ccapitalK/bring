@@ -5,6 +5,7 @@ module bring.util;
 
 import std.algorithm;
 import std.exception;
+static import std.file;
 import std.format;
 import std.process;
 import std.range;
@@ -29,4 +30,9 @@ void[0][T] toSet(T, U)(U val) if (isInputRange!(U)) {
         m[v] = [];
     }
     return m;
+}
+
+// TODO: Single syscall for this? Without an exception handler perhaps?
+bool existsAndIsFile(string path) {
+    return std.file.exists(path) && std.file.isFile(path);
 }
