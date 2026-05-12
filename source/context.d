@@ -17,26 +17,28 @@ import bring.util;
 interface Store {
     bool[] has(string[] hashes);
     ubyte[] get(string hash);
-    void putStream(string hash, ubyte[] delegate() nextChunk);
-    // FIXME: This is so prone to bugs. Just use a scope interface object
-    void put(Range)(string hash, Range chunks) if (isInputRange!(Range, ubyte[])) {
-        bool isFirst = true;
-        scope ubyte[] delegate() func = {
+    void putStream(string hash, ubyte[]delegate() nextChunk);
+}
+
+// FIXME: This is so prone to bugs. Just use a scope interface object
+void put(Range)(Store store, string hash, Range chunks)
+        if (isInputRange!(Range, ubyte[])) {
+    bool isFirst = true;
+    scope ubyte[]delegate() func = {
+        if (chunks.empty) {
+            return (ubyte[]).init; // Defensive, if someone calls this after the end of the range
+        }
+        // Note: This looks grody, but is needed because some ranges reuse the buffers
+        if (!isFirst) {
+            chunks.popFront();
             if (chunks.empty) {
-                return (ubyte[]).init; // Defensive, if someone calls this after the end of the range
+                return (ubyte[]).init;
             }
-            // Note: This looks grody, but is needed because some ranges reuse the buffers
-            if (!isFirst) {
-                chunks.popFront();
-                if (chunks.empty) {
-                    return (ubyte[]).init;
-                }
-            }
-            isFirst = false;
-            return chunks.front;
-        };
-        putStream(hash, func);
-    }
+        }
+        isFirst = false;
+        return chunks.front;
+    };
+    store.putStream(hash, func);
 }
 
 // TODO: Single syscall for this? Without an exception handler perhaps?
@@ -65,7 +67,7 @@ class FSStore : Store {
         return cast(ubyte[]) std.file.read(pathForHash(hash));
     }
 
-    void putStream(string hash, ubyte[] delegate() nextChunk) {
+    void putStream(string hash, ubyte[]delegate() nextChunk) {
         auto file = File(pathForHash(hash), "wb");
         while (true) {
             auto chunk = nextChunk();
