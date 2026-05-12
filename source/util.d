@@ -37,6 +37,11 @@ bool existsAndIsFile(string path) {
     return std.file.exists(path) && std.file.isFile(path);
 }
 
+// TODO: Single syscall for this? Without an exception handler perhaps?
+bool existsAndIsDir(string path) {
+    return std.file.exists(path) && std.file.isDir(path);
+}
+
 // FIXME: Make this more robust, different paths for different OS, kernel timesource
 void updateTimestampToNow(string path) {
     import std.datetime;

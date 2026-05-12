@@ -1,10 +1,13 @@
 {
-    "description": "Binary file store and synchronization tool for git",
-    "license": "GPL-2.0-only",
     "authors": [
         "Sahan Fernando <sahan.h.fernando@gmail.com>"
     ],
-    "version": "0.1.1",
+    "license": "GPL-2.0-only",
     "copyright": "Copyright © 2026, sahan",
-    "name": "bring"
+    "name": "bring",
+    "description": "Binary file store and synchronization tool for git",
+    "dependencies": {
+        "toml": "~>2.0.1"
+    },
+    "version": "0.1.1"
 }
