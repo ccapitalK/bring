@@ -10,6 +10,7 @@ import std.range;
 import std.stdio;
 import std.string : toLower;
 
+import bring.config;
 import bring.util;
 
 interface Store {
@@ -89,6 +90,8 @@ class FSStore : Store {
 
 class Context {
     string gitRoot;
+    UserBringConfig userConfig;
+    RepoBringConfig repoConfig;
     Store store;
 
     string relPathFor(string path) const => relativePath(path, gitRoot);
@@ -102,14 +105,17 @@ string getGitRoot() {
     return gitRoot;
 }
 
-Context setupContext() {
-    auto gitRoot = getGitRoot();
-    writeln("Root: ", gitRoot);
-    auto ctx = new Context();
-    ctx.gitRoot = gitRoot;
-    // TODO: Factor this out
+string getRepoConfigFileData(string gitRoot) {
+    string configPath = buildPath(gitRoot, ".bringrc");
+    if (configPath.existsAndIsFile()) {
+        return std.file.readText(configPath);
+    }
+    return "";
+}
+
+Store buildLocalStore() {
     auto storeDir = "~/.local/share/bringStore".expandTilde;
-    ctx.store = new FSStore(storeDir);
+    auto store = new FSStore(storeDir);
     if (!std.file.exists(storeDir)) {
         std.file.mkdir(storeDir);
     }
@@ -117,5 +123,32 @@ Context setupContext() {
     if (!std.file.exists(blobsDir)) {
         std.file.mkdir(blobsDir);
     }
+    return store;
+}
+
+Store buildDigitalOceanStore() {
+    writeln("buildDigitalOceanStore");
+    // TODO: Actually use the store
+    return buildLocalStore();
+}
+
+Context setupContext() {
+    auto gitRoot = getGitRoot();
+    writeln("Root: ", gitRoot);
+    auto ctx = new Context();
+
+    ctx.gitRoot = gitRoot;
+    ctx.userConfig = readUserConfig();
+    ctx.repoConfig = getRepoConfigFileData(gitRoot).parseRepoBringConfig();
+
+    final switch (ctx.repoConfig.storeType) {
+    case StoreType.local:
+        ctx.store = buildLocalStore();
+        break;
+    case StoreType.digitalOcean:
+        ctx.store = buildDigitalOceanStore();
+        break;
+    }
+
     return ctx;
 }

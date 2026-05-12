@@ -19,9 +19,12 @@ enum StoreType {
 }
 
 struct UserBringConfig {
-    string digitalOceanBucket;
+    // TODO: Namespace these
+    string digitalOceanPath;
     string digitalOceanKey;
     string digitalOceanSecret;
+    string digitalOceanRegion;
+    string digitalOceanBucket;
 }
 
 struct RepoBringConfig {
@@ -58,18 +61,24 @@ UserBringConfig parseUserBringConfig(string configData) {
     auto digitalOceanKey = document.readOrDefault("do-key", "");
     auto digitalOceanSecret = document.readOrDefault("do-secret", "");
     auto digitalOceanBucket = document.readOrDefault("do-bucket", "");
+    auto digitalOceanPath = document.readOrDefault("do-path", "");
+    auto digitalOceanRegion = document.readOrDefault("do-region", "");
     return UserBringConfig(
+        digitalOceanPath: digitalOceanPath,
         digitalOceanBucket: digitalOceanBucket,
         digitalOceanKey: digitalOceanKey,
         digitalOceanSecret: digitalOceanSecret,
+        digitalOceanRegion: digitalOceanRegion,
     );
 }
 
 unittest {
     assert("".parseUserBringConfig().digitalOceanBucket == "");
+    assert("do-path = 'asdf'".parseUserBringConfig().digitalOceanPath == "asdf");
     assert("do-key = 'asdf'".parseUserBringConfig().digitalOceanKey == "asdf");
-    assert("do-bucket = 'asdf'".parseUserBringConfig().digitalOceanBucket == "asdf");
     assert("do-secret = 'asdf'".parseUserBringConfig().digitalOceanSecret == "asdf");
+    assert("do-bucket = 'asdf'".parseUserBringConfig().digitalOceanBucket == "asdf");
+    assert("do-region = 'asdf'".parseUserBringConfig().digitalOceanRegion == "asdf");
 }
 
 RepoBringConfig parseRepoBringConfig(string configData) {
